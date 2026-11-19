@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S 型彎（曲線進退）擬真模擬器 - 電腦駕駛視角</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- CDN 開源函式庫 (完全免費) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+
+    <!-- 專案模組 -->
+    <script src="js/sound.js"></script>
+    <script src="js/track.js"></script>
+    <script src="js/car.js"></script>
+    <script src="js/webrtc.js"></script>
+    <script src="js/app.js"></script>
+</head>
+<body>
+    <!-- Three.js 3D 渲染畫布容器 -->
+    <div id="canvas-container"></div>
+
+    <!-- 抬頭顯示儀表 (HUD) -->
+    <div id="hud-overlay">
+        <!-- 頂部資訊列 -->
+        <div class="top-bar">
+            <div class="title-badge">
+                <h1>🚗 台灣駕訓班 S 型彎擬真訓練</h1>
+                <p>看點口訣：車頭對齊道路中央・後照鏡看門把與邊線距離</p>
+                <div id="connection-pill" class="connection-pill">
+                    <span id="connection-dot" class="status-dot"></span>
+                    <span id="connection-status-text">手機連線中...</span>
+                    <span>(點擊掃碼)</span>
+                </div>
+            </div>
+
+            <!-- 右上角鳥瞰迷你地圖 -->
+            <div class="minimap-wrapper">
+                <div class="minimap-title">
+                    <span>鳥瞰軌跡與輪胎壓線感應</span>
+                    <span style="color: #22c55e;">● 綠燈正常</span>
+                </div>
+                <canvas id="minimap-canvas"></canvas>
+            </div>
+        </div>
+
+        <!-- 壓線扣分警報橫幅 (壓線時動態跳出) -->
+        <div id="alarm-banner">
+            ⚠️ 壓到感應黑管！扣 32 分！(逼逼逼叫)
+        </div>
+
+        <!-- 底部駕駛儀表與雙側照後鏡視窗外框 -->
+        <div class="bottom-cockpit-bar">
+            <!-- 左照後鏡 -->
+            <div class="mirror-box left">
+                <span class="mirror-label">左照後鏡</span>
+                <span class="mirror-hint">看前門把手與黑管距離 (約 1 拳)</span>
+            </div>
+
+            <!-- 中央駕駛儀表盤 -->
+            <div class="dashboard-center">
+                <div class="dash-item">
+                    <div class="dash-label">檔位</div>
+                    <div id="gear-display" class="gear-badge D">D</div>
+                </div>
+
+                <div class="dash-item">
+                    <div class="dash-label">方向盤圈數 (540° 擬真)</div>
+                    <div id="wheel-turns-display" class="dash-val">
+                        <span class="wheel-turns-val straight">已回正 (0.0 圈)</span>
+                    </div>
+                </div>
+
+                <div class="dash-item">
+                    <div class="dash-label">車速 (怠速滑行)</div>
+                    <div id="speed-display" class="dash-val">4.1 km/h</div>
+                </div>
+            </div>
+
+            <!-- 右照後鏡 -->
+            <div class="mirror-box right">
+                <span class="mirror-label">右照後鏡</span>
+                <span class="mirror-hint">看前門把手與黑管距離 (約 1 拳)</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 手機配對 QR Code 彈窗 -->
+    <div id="qr-modal" class="modal-overlay">
+        <div class="modal-card">
+            <h2>📱 手機無線方向盤配對</h2>
+            <p>請用手機相機掃描下方 QR Code，立即開啟方向盤控制器（免安裝任何 App）</p>
+
+            <div id="qrcode-container"></div>
+
+            <div class="url-copy-box">
+                <input type="text" id="phone-url-input" readonly>
+                <button id="copy-url-btn" class="btn-primary">複製網址</button>
+            </div>
+
+            <p class="kbd-hint">
+                電腦鍵盤也能測試：<span class="kbd">←</span> <span class="kbd">→</span> 或 <span class="kbd">A</span> <span class="kbd">D</span> 轉方向盤，<span class="kbd">空白鍵</span> 煞車，<span class="kbd">W</span> / <span class="kbd">S</span> 切換 D/R 檔，<span class="kbd">R</span> 鍵重來
+            </p>
+
+            <button id="close-qr-btn" class="btn-close">關閉視窗</button>
+        </div>
+    </div>
+</body>
+</html>

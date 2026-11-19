@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>S型彎練習 - 手機方向盤控制器</title>
+    <link rel="stylesheet" href="css/wheel.css">
+    <!-- PeerJS 免費點對點 WebRTC 函式庫 -->
+    <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+    <script src="js/webrtc.js"></script>
+    <script src="js/wheel.js"></script>
+</head>
+<body>
+    <div id="wheel-app">
+        <!-- 頂部連線與圈數儀表 -->
+        <header class="top-status-bar">
+            <div class="conn-badge">
+                <span id="conn-dot" class="conn-dot"></span>
+                <span id="conn-text">連線中...</span>
+            </div>
+            <div id="turns-badge" class="turns-badge straight">
+                已回正 (0.0 圈)
+            </div>
+        </header>
+
+        <!-- 中央方向盤與功能操作鍵 -->
+        <main class="center-controls-area">
+            <!-- 虛擬方向盤 (支援體感旋轉與觸控拖動) -->
+            <div class="wheel-container">
+                <div id="virtual-wheel" class="virtual-wheel">
+                    <div class="wheel-top-marker"></div>
+                    <div class="spoke-h"></div>
+                    <div class="spoke-v"></div>
+                    <div class="wheel-hub">喇叭</div>
+                </div>
+            </div>
+
+            <!-- 側邊快捷按鈕 -->
+            <div class="side-action-buttons">
+                <button id="btn-enable-gyro" class="btn-action">
+                    📱 啟用體感陀螺儀
+                </button>
+                <button id="btn-calibrate" class="btn-action">
+                    🎯 方向盤校準 (0°)
+                </button>
+                <button id="btn-reset" class="btn-action danger">
+                    🔄 重置回起點
+                </button>
+            </div>
+        </main>
+
+        <!-- 底部踏板與排檔區 -->
+        <footer class="bottom-controls-bar">
+            <!-- 檔位切換 (D / R) -->
+            <div class="gear-selector">
+                <button id="btn-gear-d" class="btn-gear active D">D 檔</button>
+                <button id="btn-gear-r" class="btn-gear">R 檔</button>
+            </div>
+
+            <!-- 大面積煞車踏板 (按住煞車，放開怠速滑行) -->
+            <div id="brake-pedal" class="brake-pedal">
+                <span class="pedal-title">煞 車 (BRAKE)</span>
+                <span class="pedal-sub">按住停車・放開怠速滑行</span>
+            </div>
+        </footer>
+
+        <div class="landscape-tip">
+            💡 建議將手機橫拿雙手握持，最貼近真實開車打方向盤手感
+        </div>
+    </div>
+</body>
+</html>
