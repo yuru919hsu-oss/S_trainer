@@ -12,7 +12,7 @@
 </head>
 <body>
     <div id="wheel-app">
-        <!-- 頂部連線與圈數儀表 -->
+        <!-- 頂部超薄狀態儀表列 -->
         <header class="top-status-bar">
             <div class="conn-badge">
                 <span id="conn-dot" class="conn-dot"></span>
@@ -21,52 +21,60 @@
             <div id="turns-badge" class="turns-badge straight">
                 已回正 (0.0 圈)
             </div>
+            <div id="gear-indicator-pill" class="gear-indicator-pill P">
+                P 檔 (停車)
+            </div>
         </header>
 
-        <!-- 中央方向盤與功能操作鍵 -->
-        <main class="center-controls-area">
-            <!-- 虛擬方向盤 (支援體感旋轉與觸控拖動) -->
-            <div class="wheel-container">
-                <div id="virtual-wheel" class="virtual-wheel">
-                    <div class="wheel-top-marker"></div>
-                    <div class="spoke-h"></div>
-                    <div class="spoke-v"></div>
-                    <div class="wheel-hub">喇叭</div>
+        <!-- 橫向專屬 3 欄式主控面板 (完全適配 Safari 橫屏不裁切) -->
+        <main class="landscape-dashboard">
+            <!-- 左欄：排檔桿 (P/D/R) 與 智慧煞車踏板 -->
+            <section class="dash-col col-left">
+                <div class="gear-group">
+                    <button id="btn-gear-p" class="btn-gear active P" data-gear="P">P 檔</button>
+                    <button id="btn-gear-d" class="btn-gear D" data-gear="D">D 檔</button>
+                    <button id="btn-gear-r" class="btn-gear R" data-gear="R">R 檔</button>
                 </div>
-            </div>
 
-            <!-- 側邊快捷按鈕 -->
-            <div class="side-action-buttons">
+                <!-- 智慧煞車踏板 (按一下煞停鎖定 / 再按一次怠速滑行，亦支援長按) -->
+                <button id="brake-pedal" class="brake-pedal auto-held">
+                    <span class="pedal-icon">🛑</span>
+                    <span class="pedal-title">煞 車</span>
+                    <span id="pedal-sub-text" class="pedal-sub">已煞停 (點擊出發)</span>
+                </button>
+            </section>
+
+            <!-- 中欄：虛擬方向盤本體 (支援陀螺儀與滑動) -->
+            <section class="dash-col col-center">
+                <div class="wheel-container">
+                    <div id="virtual-wheel" class="virtual-wheel">
+                        <div class="wheel-top-marker"></div>
+                        <div class="spoke-h"></div>
+                        <div class="spoke-v"></div>
+                        <div class="wheel-hub">
+                            <span class="hub-label">1.5 圈</span>
+                            <span class="hub-sub">540°</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 右欄：快捷功能鍵 (體感陀螺儀、校準歸零、重置回起點) -->
+            <section class="dash-col col-right">
                 <button id="btn-enable-gyro" class="btn-action">
-                    📱 啟用體感陀螺儀
+                    <span class="btn-icon">📱</span>
+                    <span class="btn-txt">啟用體感陀螺儀</span>
                 </button>
                 <button id="btn-calibrate" class="btn-action">
-                    🎯 方向盤校準 (0°)
+                    <span class="btn-icon">🎯</span>
+                    <span class="btn-txt">方向盤校準 (0°)</span>
                 </button>
                 <button id="btn-reset" class="btn-action danger">
-                    🔄 重置回起點
+                    <span class="btn-icon">🔄</span>
+                    <span class="btn-txt">重置回起點</span>
                 </button>
-            </div>
+            </section>
         </main>
-
-        <!-- 底部踏板與排檔區 -->
-        <footer class="bottom-controls-bar">
-            <!-- 檔位切換 (D / R) -->
-            <div class="gear-selector">
-                <button id="btn-gear-d" class="btn-gear active D">D 檔</button>
-                <button id="btn-gear-r" class="btn-gear">R 檔</button>
-            </div>
-
-            <!-- 大面積煞車踏板 (按住煞車，放開怠速滑行) -->
-            <div id="brake-pedal" class="brake-pedal">
-                <span class="pedal-title">煞 車 (BRAKE)</span>
-                <span class="pedal-sub">按住停車・放開怠速滑行</span>
-            </div>
-        </footer>
-
-        <div class="landscape-tip">
-            💡 建議將手機橫拿雙手握持，最貼近真實開車打方向盤手感
-        </div>
     </div>
 </body>
 </html>

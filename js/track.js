@@ -13,46 +13,44 @@ class SCurveTrack {
     }
 
     generateTrack() {
-        // 建立 S 型彎道中心線
-        // 入口直線 -> 弧度1 (向右彎) -> 弧度2 (反向向左彎) -> 出口直線
+        // 建立 S 型彎道中心線 (依台灣標準考照動線：先左彎、後右彎，入口與出口同向平行)
         const points = [];
         
-        // 1. 起跑區直線 (長度 8m)
+        // 1. 起跑區直線 (長度 8m, z 從 -8 到 0)
         for (let y = -8; y <= 0; y += 0.2) {
             points.push({ x: 0, z: y });
         }
 
-        // 2. 第一個彎道 (向右彎，弧度半徑 R1 = 7.5m, 轉 110度)
+        // 2. 第一個彎道 (向左彎，半徑 R1 = 7.5m, 轉 110度)
         const R1 = 7.5;
-        const startAngle1 = Math.PI; // 180度
-        const sweep1 = - (110 * Math.PI / 180); // 向右彎
+        const center1 = { x: -R1, z: 0 };
+        const sweep1 = (110 * Math.PI / 180); // 向左彎
         const steps1 = 120;
-        const center1 = { x: R1, z: 0 };
         for (let i = 1; i <= steps1; i++) {
-            const angle = startAngle1 + (sweep1 * i / steps1);
+            const angle = (sweep1 * i / steps1);
             points.push({
                 x: center1.x + R1 * Math.cos(angle),
-                z: center1.z - R1 * Math.sin(angle)
+                z: center1.z + R1 * Math.sin(angle)
             });
         }
 
         // 取得彎道1結束點與切線
         const endP1 = points[points.length - 1];
-        const endAngle1 = startAngle1 + sweep1;
         const tangent1 = {
-            x: -Math.sin(endAngle1),
-            z: -Math.cos(endAngle1)
+            x: -Math.sin(sweep1),
+            z: Math.cos(sweep1)
         };
 
-        // 3. 第二個反向彎道 (向左彎，弧度半徑 R2 = 7.5m, 轉 110度)
+        // 3. 第二個反向彎道 (向右彎，半徑 R2 = 7.5m, 轉 110度)
         const R2 = 7.5;
-        const normalToTangent = { x: -tangent1.z, z: tangent1.x };
+        // 向左彎前進時，右側法線向量為 (tangent.z, -tangent.x)
+        const normRight = { x: tangent1.z, z: -tangent1.x };
         const center2 = {
-            x: endP1.x - normalToTangent.x * R2,
-            z: endP1.z - normalToTangent.z * R2
+            x: endP1.x + normRight.x * R2,
+            z: endP1.z + normRight.z * R2
         };
         const startAngle2 = Math.atan2(endP1.z - center2.z, endP1.x - center2.x);
-        const sweep2 = (110 * Math.PI / 180); // 向左彎
+        const sweep2 = - (110 * Math.PI / 180); // 向右彎
         const steps2 = 120;
         for (let i = 1; i <= steps2; i++) {
             const angle = startAngle2 + (sweep2 * i / steps2);
@@ -62,7 +60,7 @@ class SCurveTrack {
             });
         }
 
-        // 4. 出口直線 (長度 8m)
+        // 4. 出口直線 (長度 8m，朝 +z 前行至終點線)
         const endP2 = points[points.length - 1];
         const prevP = points[points.length - 2];
         const exitDir = {
@@ -144,6 +142,36 @@ class SCurveTrack {
         let projX = a.x + t * dx;
         let projZ = a.z + t * dz;
         return Math.hypot(p.x - projX, p.z - projZ);
+    }
+
+    getNearestIndex(x, z) {
+        let minDist = Infinity;
+        let bestIdx = 0;
+        for (let i = 0; i < this.centerPoints.length; i++) {
+            const p = this.centerPoints[i];
+            const d = Math.hypot(x - p.x, z - p.z);
+            if (d < minDist) {
+                minDist = d;
+                bestIdx = i;
+            }
+        }
+        return { index: bestIdx, distance: minDist };
+    }
+
+    getZoneInfo(x, z) {
+        const { index } = this.getNearestIndex(x, z);
+        // 總共約 321 點
+        if (index <= 45) {
+            return { zone: 'ENTRANCE', title: '入口直行區', index: index, progress: index / 320 };
+        } else if (index < 145) {
+            return { zone: 'CURVE1_LEFT', title: '第一彎（向左打滿）', index: index, progress: index / 320 };
+        } else if (index < 175) {
+            return { zone: 'TRANSITION', title: '交接回正區', index: index, progress: index / 320 };
+        } else if (index < 275) {
+            return { zone: 'CURVE2_RIGHT', title: '第二彎（向右打滿）', index: index, progress: index / 320 };
+        } else {
+            return { zone: 'EXIT', title: '出口停止線區', index: index, progress: index / 320 };
+        }
     }
 }
 

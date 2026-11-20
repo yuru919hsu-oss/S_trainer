@@ -27,21 +27,34 @@
         <div class="top-bar">
             <div class="title-badge">
                 <h1>🚗 台灣駕訓班 S 型彎擬真訓練</h1>
-                <p>看點口訣：車頭對齊道路中央・後照鏡看門把與邊線距離</p>
-                <div id="connection-pill" class="connection-pill">
-                    <span id="connection-dot" class="status-dot"></span>
-                    <span id="connection-status-text">手機連線中...</span>
-                    <span>(點擊掃碼)</span>
+                <p>標準動線：先左彎後右彎・後照鏡看門把與黑管維持 1 拳距離</p>
+                <div class="top-action-row">
+                    <div id="connection-pill" class="connection-pill">
+                        <span id="connection-dot" class="status-dot"></span>
+                        <span id="connection-status-text">手機連線中...</span>
+                        <span>(點擊掃碼)</span>
+                    </div>
+                    <button id="btn-demo-mode" class="btn-hud-action demo">🎬 教練完美示範教學</button>
+                    <button id="btn-speed-mode" class="btn-hud-action">🐢 怠速: 超慢 (1.8km/h)</button>
+                    <button id="btn-reset-main" class="btn-hud-action reset">🔄 重置回起點</button>
                 </div>
             </div>
 
             <!-- 右上角鳥瞰迷你地圖 -->
             <div class="minimap-wrapper">
                 <div class="minimap-title">
-                    <span>鳥瞰軌跡與輪胎壓線感應</span>
-                    <span style="color: #22c55e;">● 綠燈正常</span>
+                    <span>鳥瞰軌跡 (綠燈正常/紅燈壓管)</span>
+                    <span id="minimap-status-dot" style="color: #22c55e;">● 正常</span>
                 </div>
                 <canvas id="minimap-canvas"></canvas>
+            </div>
+        </div>
+
+        <!-- 教練動態口訣語音/文字提示卡片 -->
+        <div id="coach-hint-card" class="coach-hint-card">
+            <div class="coach-badge">👨‍🏫 教練看點口訣</div>
+            <div id="coach-hint-text" class="coach-hint-text">
+                起步準備：打入 D 檔，車頭對齊車道中央緩慢前行
             </div>
         </div>
 
@@ -54,15 +67,22 @@
         <div class="bottom-cockpit-bar">
             <!-- 左照後鏡 -->
             <div class="mirror-box left">
-                <span class="mirror-label">左照後鏡</span>
-                <span class="mirror-hint">看前門把手與黑管距離 (約 1 拳)</span>
+                <div class="mirror-header">
+                    <span class="mirror-label">左照後鏡</span>
+                    <span class="mirror-hint">前門把與黑管約 1 拳 (15cm)</span>
+                </div>
+                <!-- 虛擬一拳量尺框 (輔助看點) -->
+                <div class="fist-guide-box left">
+                    <div class="fist-marker"></div>
+                    <span class="fist-text">1拳安全帶</span>
+                </div>
             </div>
 
             <!-- 中央駕駛儀表盤 -->
             <div class="dashboard-center">
                 <div class="dash-item">
                     <div class="dash-label">檔位</div>
-                    <div id="gear-display" class="gear-badge D">D</div>
+                    <div id="gear-display" class="gear-badge P">P</div>
                 </div>
 
                 <div class="dash-item">
@@ -73,15 +93,27 @@
                 </div>
 
                 <div class="dash-item">
-                    <div class="dash-label">車速 (怠速滑行)</div>
-                    <div id="speed-display" class="dash-val">4.1 km/h</div>
+                    <div class="dash-label">車速 (怠速爬行)</div>
+                    <div id="speed-display" class="dash-val">0.0 km/h</div>
+                </div>
+
+                <div class="dash-item">
+                    <div class="dash-label">煞車狀態</div>
+                    <div id="brake-status-display" class="brake-status-badge held">P 檔停車中</div>
                 </div>
             </div>
 
             <!-- 右照後鏡 -->
             <div class="mirror-box right">
-                <span class="mirror-label">右照後鏡</span>
-                <span class="mirror-hint">看前門把手與黑管距離 (約 1 拳)</span>
+                <div class="mirror-header">
+                    <span class="mirror-label">右照後鏡</span>
+                    <span class="mirror-hint">前門把與黑管約 1 拳 (15cm)</span>
+                </div>
+                <!-- 虛擬一拳量尺框 (輔助看點) -->
+                <div class="fist-guide-box right">
+                    <div class="fist-marker"></div>
+                    <span class="fist-text">1拳安全帶</span>
+                </div>
             </div>
         </div>
     </div>
@@ -100,7 +132,10 @@
             </div>
 
             <p class="kbd-hint">
-                電腦鍵盤也能測試：<span class="kbd">←</span> <span class="kbd">→</span> 或 <span class="kbd">A</span> <span class="kbd">D</span> 轉方向盤，<span class="kbd">空白鍵</span> 煞車，<span class="kbd">W</span> / <span class="kbd">S</span> 切換 D/R 檔，<span class="kbd">R</span> 鍵重來
+                電腦鍵盤快速鍵：<br>
+                <span class="kbd">P</span> P檔停車 | <span class="kbd">W</span> D檔前進 | <span class="kbd">S</span> R檔倒車<br>
+                <span class="kbd">←</span> <span class="kbd">→</span> 或 <span class="kbd">A</span> <span class="kbd">D</span> 打滿1.5圈 | <span class="kbd">C</span> 回正0°<br>
+                <span class="kbd">空白鍵</span> 踩煞車 | <span class="kbd">M</span> 教練示範教學 | <span class="kbd">R</span> 重置
             </p>
 
             <button id="close-qr-btn" class="btn-close">關閉視窗</button>
